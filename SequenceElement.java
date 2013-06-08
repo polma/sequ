@@ -7,7 +7,38 @@ package ii.olma;
  * Time: 7:13 PM
  */
 public class SequenceElement {
-    private boolean isTerminal;
-    private Rule rule;
+    public boolean isTerminal;
+    private Rule correspondingRule;
     private char value;
+
+    public SequenceElement(char value) {
+        this.isTerminal = false;
+        this.value = value;
+    }
+
+    public SequenceElement(boolean isTerminal) {
+        this.isTerminal = isTerminal;
+        this.value = 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null)
+            return false;
+        final SequenceElement se = (SequenceElement) o;
+        if (isTerminal != se.isTerminal)
+            return false;
+        if (isTerminal)
+            return value == se.value;
+        else
+            return correspondingRule == se.correspondingRule;
+    }
+
+    @Override
+    public int hashCode() {
+        if (value != 0) {
+            return 103919 * value;
+        }
+        return correspondingRule.hashCode();
+    }
 }
