@@ -1,7 +1,5 @@
 package ii.olma;
 
-import java.util.LinkedList;
-
 /**
  * Created with IntelliJ IDEA.
  * User: pdr
@@ -15,27 +13,40 @@ public class Rule {
     private int usageCount;
     public int indexInRulesArray;
 
-    private LinkedList<SequenceElement> ruleContents;
+    private DoublyLinkedList ruleContents;
 
-
-    public Rule(){
-        ruleContents = new LinkedList<SequenceElement>();
+    public Rule() {
+        ruleContents = new DoublyLinkedList(this);
     }
 
-    public void replaceDigram(int index, Rule r){
-        ruleContents.iterator();
+    public void replaceDigram(ListNode startingNode, Rule r) {
+        final ListNode newNode = new ListNode(new SequenceElement(r));
+        r.incrementCount();
+
+        SequenceElement s = startingNode.element;
+        s.deleteFromSequence();
+        s = startingNode.next.element;
+        s.deleteFromSequence();
+
+        ruleContents.insertBefore(startingNode, newNode);
+        ruleContents.deleteNode(startingNode);
+        ruleContents.deleteNode(newNode.next);
+
+
+        // maintain rule utility!
+
     }
 
-    public SequenceElement getLastElement(){
-        return ruleContents.getLast();
+    public SequenceElement getLastElement() {
+        return ruleContents.getLast().element;
     }
 
-    public void append(SequenceElement e){
-        ruleContents.addLast(e);
+    public void append(SequenceElement e) {
+        ruleContents.append(new ListNode(e));
     }
 
-    public int getLength(){
-        return ruleContents.size();
+    public int getLength() {
+        return ruleContents.getLength();
     }
 
     public String getRuleValue() {
@@ -55,15 +66,15 @@ public class Rule {
     }
 
 
-    public void incrementCount(){
+    public void incrementCount() {
         ++usageCount;
     }
 
-    public void decrementCount(){
+    public void decrementCount() {
         --usageCount;
     }
 
-    public boolean shouldBeDeleted(){
+    public boolean shouldBeDeleted() {
         return usageCount < 2;
     }
 }

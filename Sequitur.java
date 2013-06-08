@@ -13,7 +13,7 @@ public class Sequitur {
 
     private final ArrayList<Rule> rules;
     private final Rule startingRule;
-    private final HashMap<Digram, DigramPointer> digrams;
+    private final HashMap<Digram, ListNode> digrams;
 
     public Sequitur(char firstChar) {
         rules = new ArrayList<Rule>();
@@ -23,27 +23,26 @@ public class Sequitur {
         startingRule.append(new SequenceElement(firstChar));
         rules.add(startingRule); // the main rule (eg the starting symbol)
 
-        digrams = new HashMap<Digram, DigramPointer>();
+        digrams = new HashMap<Digram, ListNode>();
     }
 
 
     public void addLetter(char c) {
         final SequenceElement newLastElement = new SequenceElement(c);
         final Digram d = new Digram(startingRule.getLastElement(), newLastElement);
-        final DigramPointer p = new DigramPointer(startingRule, startingRule.getLength()-1);
         startingRule.append(newLastElement);
-        ensureDigramUniqueness(d,p);
+        ensureDigramUniqueness(d);
     }
 
-    private void ensureDigramUniqueness(Digram d, DigramPointer p) {
+    private void ensureDigramUniqueness(Digram d) {
         if (digrams.containsKey(d)) {
-            final DigramPointer dp = digrams.get(d);
-            if(dp.getRule().getLength() == 2){
+            final ListNode node = digrams.get(d);
+            if(node.isRuleOfLengthTwo()){
                 //the other occurence is a full rule
-
+                replaceDigramWithRule();
             }
         } else {
-            digrams.put(d, p);
+            digrams.put(d, );
         }
     }
 

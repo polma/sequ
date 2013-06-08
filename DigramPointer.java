@@ -8,27 +8,12 @@ package ii.olma;
  */
 public class DigramPointer {
 
-    private Rule rule;
-    private int digramIndex;
-
-    public DigramPointer(Rule rule, int digramIndex) {
-        this.rule = rule;
-        this.digramIndex = digramIndex;
+    public DigramPointer(DoublyLinkedList list, ListNode node) {
+        this.list = list;
+        this.node = node;
     }
 
-    public int getDigramIndex() {
-        return digramIndex;
-    }
+    private DoublyLinkedList list;
+    private ListNode node;
 
-    public void setDigramIndex(int digramIndex) {
-        this.digramIndex = digramIndex;
-    }
-
-    public Rule getRule() {
-        return rule;
-    }
-
-    public void setRule(Rule rule) {
-        this.rule = rule;
-    }
 }

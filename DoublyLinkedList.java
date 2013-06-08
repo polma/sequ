@@ -10,12 +10,19 @@ public class DoublyLinkedList {
     private ListNode first;
     private ListNode last;
 
+    private Rule correspondingRule;
+
     private int length;
 
-    public DoublyLinkedList() {
+    public DoublyLinkedList(Rule r) {
         length = 0;
         first = null;
         last = null;
+        correspondingRule = r;
+    }
+
+    public ListNode getLast() {
+        return last;
     }
 
     public void append(ListNode n) {
@@ -44,6 +51,24 @@ public class DoublyLinkedList {
             n.next.prev = n.prev;
         }
         --length;
+    }
+
+    public void insertBefore(ListNode node, ListNode newNode) {
+        newNode.prev = node.prev;
+        newNode.next = node;
+        if (node.prev == null)
+            first = newNode;
+        else
+            node.prev.next = newNode;
+        node.prev = newNode;
+    }
+
+    public void replaceDigram() {
+
+    }
+
+    public int getLength() {
+        return length;
     }
 
 }

@@ -12,13 +12,19 @@ public class SequenceElement {
     private char value;
 
     public SequenceElement(char value) {
-        this.isTerminal = false;
+        this.isTerminal = true;
         this.value = value;
     }
 
-    public SequenceElement(boolean isTerminal) {
-        this.isTerminal = isTerminal;
+    public SequenceElement(Rule r) {
+        this.correspondingRule = r;
         this.value = 0;
+        this.isTerminal = false;
+    }
+
+    public void deleteFromSequence(){
+        if(!isTerminal)
+            correspondingRule.decrementCount();
     }
 
     @Override
