@@ -11,6 +11,13 @@ public class SequenceElement {
     private Rule correspondingRule;
     private char value;
 
+    public SequenceElement next;
+    public SequenceElement prev;
+
+    public boolean isRuleOfLengthTwo(){
+        return this.prev == null && this.next != null && this.next.next == null;
+    }
+
     public SequenceElement(char value) {
         this.isTerminal = true;
         this.value = value;

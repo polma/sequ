@@ -7,8 +7,8 @@ package ii.olma;
  * Time: 10:22 AM
  */
 public class DoublyLinkedList {
-    private ListNode first;
-    private ListNode last;
+    private SequenceElement first;
+    private SequenceElement last;
 
     private Rule correspondingRule;
 
@@ -21,11 +21,11 @@ public class DoublyLinkedList {
         correspondingRule = r;
     }
 
-    public ListNode getLast() {
+    public SequenceElement getLast() {
         return last;
     }
 
-    public void append(ListNode n) {
+    public void append(SequenceElement n) {
         if (last == null) {
             n.prev = null;
             n.next = null;
@@ -39,7 +39,7 @@ public class DoublyLinkedList {
         ++length;
     }
 
-    public void deleteNode(ListNode n) {
+    public void deleteNode(SequenceElement n) {
         if (n.prev == null) {
             first = n.next;
         } else {
@@ -53,7 +53,7 @@ public class DoublyLinkedList {
         --length;
     }
 
-    public void insertBefore(ListNode node, ListNode newNode) {
+    public void insertBefore(SequenceElement node, SequenceElement newNode) {
         newNode.prev = node.prev;
         newNode.next = node;
         if (node.prev == null)

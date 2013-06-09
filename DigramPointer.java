@@ -8,12 +8,12 @@ package ii.olma;
  */
 public class DigramPointer {
 
-    public DigramPointer(DoublyLinkedList list, ListNode node) {
+    public DigramPointer(DoublyLinkedList list, SequenceElement node) {
         this.list = list;
         this.node = node;
     }
 
     private DoublyLinkedList list;
-    private ListNode node;
+    private SequenceElement node;
 
 }

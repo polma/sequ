@@ -19,13 +19,13 @@ public class Rule {
         ruleContents = new DoublyLinkedList(this);
     }
 
-    public void replaceDigramWithRule(ListNode startingNode, Rule r) {
-        final ListNode newNode = new ListNode(new SequenceElement(r));
+    public void replaceDigramWithRule(SequenceElement startingNode, Rule r) {
+        final SequenceElement newNode = new SequenceElement(r);
         r.incrementCount();
 
-        SequenceElement s = startingNode.element;
+        SequenceElement s = startingNode;
         s.deleteFromSequence();
-        s = startingNode.next.element;
+        s = startingNode.next;
         s.deleteFromSequence();
 
         ruleContents.insertBefore(startingNode, newNode);
@@ -41,11 +41,11 @@ public class Rule {
     }
 
     public SequenceElement getLastElement() {
-        return ruleContents.getLast().element;
+        return ruleContents.getLast();
     }
 
     public void append(SequenceElement e) {
-        ruleContents.append(new ListNode(e));
+        ruleContents.append(e);
     }
 
     public int getLength() {
