@@ -10,9 +10,17 @@ public class Digram {
     private SequenceElement e1;
     private SequenceElement e2;
 
-    public Digram(SequenceElement e1, SequenceElement e2){
+    public Digram(SequenceElement e1, SequenceElement e2) {
         this.e1 = e1;
         this.e2 = e2;
+    }
+
+    public SequenceElement first() {
+        return e1;
+    }
+
+    public SequenceElement second() {
+        return e2;
     }
 
     @Override

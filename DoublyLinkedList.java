@@ -25,6 +25,10 @@ public class DoublyLinkedList {
         return last;
     }
 
+    public SequenceElement getFirst(){
+        return first;
+    }
+
     public void append(SequenceElement n) {
         if (last == null) {
             n.prev = null;

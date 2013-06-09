@@ -31,18 +31,52 @@ public class Sequitur {
         final SequenceElement newLastElement = new SequenceElement(c);
         final Digram d = new Digram(startingRule.getLastElement(), newLastElement);
         startingRule.append(newLastElement);
-        ensureDigramUniqueness(d);
+        ensureDigramUniqueness(d, startingRule);
     }
 
-    private void ensureDigramUniqueness(Digram d) {
+    private void ensureDigramUniqueness(Digram d, Rule r) {
         if (digrams.containsKey(d)) {
             final SequenceElement node = digrams.get(d);
             if(node.isRuleOfLengthTwo()){
                 //the other occurence is a full rule
-                startingRule.replaceDigramWithRule(startingRule.getLastElement().);
+                final Digram newDigram = r.replaceDigramWithRule(d.first(), node.getCorrespondingRule());
+
+                //now we have a new digram
+                ensureDigramUniqueness(newDigram, r);
+
+                //also the count changes
+                if(!d.first().isTerminal)
+                    ensureRuleUtility(d.first().getCorrespondingRule(), d.first());
+
+
+                /// ALSO delete digrams!!!!!!!!!!!!!!!
+
+            }
+            else{
+                final Rule newRule = new Rule();
+                newRule.append(node);
+                newRule.append(node.next);
+                rules.add(newRule);
+
+                // add the 3 digrams and make two replacements
+
+
+                // ensure utility of the first symbol
+                ensureRuleUtility(node.getCorrespondingRule(), node);
             }
         } else {
-            digrams.put(d, );
+            digrams.put(d, d.first());
+        }
+    }
+
+    private void ensureRuleUtility(Rule r, SequenceElement s){
+        if(r.shouldBeDeleted()){
+            final Rule anchor = s.getCorrespondingRule();
+            final SequenceElement prev = anchor.unwindRule(s, r);
+            final SequenceElement next = s.next;
+            final Digram d = new Digram(prev, next);
+            ensureDigramUniqueness(d, anchor);
+            rules.remove(r);
         }
     }
 

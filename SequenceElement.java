@@ -34,6 +34,10 @@ public class SequenceElement {
             correspondingRule.decrementCount();
     }
 
+    public Rule getCorrespondingRule(){
+        return correspondingRule;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null)

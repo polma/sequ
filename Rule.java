@@ -19,7 +19,11 @@ public class Rule {
         ruleContents = new DoublyLinkedList(this);
     }
 
-    public void replaceDigramWithRule(SequenceElement startingNode, Rule r) {
+    public int getUsageCount(){
+        return usageCount;
+    }
+
+    public Digram replaceDigramWithRule(SequenceElement startingNode, Rule r) {
         final SequenceElement newNode = new SequenceElement(r);
         r.incrementCount();
 
@@ -32,16 +36,33 @@ public class Rule {
         ruleContents.deleteNode(startingNode);
         ruleContents.deleteNode(newNode.next);
 
-
+        return new Digram(newNode.prev, newNode);
         // maintain rule utility!
 
+    }
 
-        // it also introduces new bigrams!
+    public SequenceElement unwindRule(SequenceElement s, Rule r){
+        final SequenceElement temp = new SequenceElement('c');
+        final DoublyLinkedList replacement = r.getContents();
+        ruleContents.insertBefore(s, temp);
+        temp.next = replacement.getFirst();
+        s.prev = replacement.getLast();
+        ruleContents.deleteNode(temp);
+        ruleContents.deleteNode(s);
 
+        return replacement.getLast();
+    }
+
+    public DoublyLinkedList getContents(){
+        return ruleContents;
     }
 
     public SequenceElement getLastElement() {
         return ruleContents.getLast();
+    }
+
+    public SequenceElement getFirstElement(){
+        return ruleContents.getFirst();
     }
 
     public void append(SequenceElement e) {
