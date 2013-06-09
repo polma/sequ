@@ -22,8 +22,8 @@ public class SequenceElement {
         this.isTerminal = false;
     }
 
-    public void deleteFromSequence(){
-        if(!isTerminal)
+    public void deleteFromSequence() {
+        if (!isTerminal)
             correspondingRule.decrementCount();
     }
 

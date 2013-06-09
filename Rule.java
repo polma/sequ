@@ -19,7 +19,7 @@ public class Rule {
         ruleContents = new DoublyLinkedList(this);
     }
 
-    public void replaceDigram(ListNode startingNode, Rule r) {
+    public void replaceDigramWithRule(ListNode startingNode, Rule r) {
         final ListNode newNode = new ListNode(new SequenceElement(r));
         r.incrementCount();
 
@@ -34,6 +34,9 @@ public class Rule {
 
 
         // maintain rule utility!
+
+
+        // it also introduces new bigrams!
 
     }
 

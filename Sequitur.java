@@ -39,7 +39,7 @@ public class Sequitur {
             final ListNode node = digrams.get(d);
             if(node.isRuleOfLengthTwo()){
                 //the other occurence is a full rule
-                replaceDigramWithRule();
+                startingRule.replaceDigramWithRule(startingRule.getLastElement().);
             }
         } else {
             digrams.put(d, );
