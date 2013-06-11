@@ -28,7 +28,7 @@ public class Sequitur {
         startingRule.setRuleName("0");
         rules.add(startingRule); // the main rule (eg the starting symbol)
 
-        digrams = new HashMap<Digram, Rule>();
+        digrams = new HashMap<Digram, DigramPointer>();
 
         availableNumbers= new boolean[MAXRULES];
         for(int i =1; i<MAXRULES; ++i) availableNumbers[i] = true;
@@ -46,6 +46,7 @@ public class Sequitur {
 
         int i = 1;
         while(!availableNumbers[i]) ++i;
+        availableNumbers[i] = false;
         return String.valueOf(i);
     }
 
@@ -62,8 +63,8 @@ public class Sequitur {
     private void ensureDigramUniqueness(Digram d, Rule r, SequenceElement digramStart) {
         System.err.println("Digram: " + d.first().toString() + "  " + d.second().toString());
         if (digrams.containsKey(d)) {
-            final Rule correspondingRule = digrams.get(d); //the rule with the other occurence
-            final SequenceElement correspondingStart = null;
+            final Rule correspondingRule = digrams.get(d).correspondingRule; //the rule with the other occurence
+            final SequenceElement correspondingStart = digrams.get(d).correspondingElement;
 
             if(correspondingRule.getLength() == 2){
                 System.err.println("Replacing digram with a full rule");
@@ -91,8 +92,13 @@ public class Sequitur {
                 rules.add(newRule);
                 newRule.setRuleName(getNewRuleName());
 
+                digrams.remove(d);
+                final Digram digramInNewRule = new Digram(newRule.getFirstElement(), newRule.getFirstElement().next);
+                digrams.put(digramInNewRule, new DigramPointer(newRule, newRule.getFirstElement()));
+
+
                 r.replaceDigramWithRule(digramStart, newRule);
-                correspondingRule.replaceDigramWithRule(d.first(), newRule);
+                correspondingRule.replaceDigramWithRule(correspondingStart, newRule);
                 correspondingRule.deleteDigram(d);
 
                 System.err.println("\t\t" + d.first().toString() + " " + d.second().toString());

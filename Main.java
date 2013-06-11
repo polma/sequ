@@ -5,7 +5,13 @@ import java.io.*;
 public class Main {
 
     public static void main(String[] args) {
+
+        char test_sequence[] = {'b','c','b','c','b','c'};
         Sequitur sq = new Sequitur('a');
+        sq.addLetter('b');
+        sq.addLetter('c');
+        sq.addLetter('b');
+        sq.addLetter('c');
         sq.addLetter('b');
         sq.addLetter('c');
         sq.addLetter('b');
