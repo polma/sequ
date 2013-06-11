@@ -29,6 +29,12 @@ public class SequenceElement {
         this.isTerminal = false;
     }
 
+    public SequenceElement(SequenceElement e){
+        this.isTerminal = e.isTerminal;
+        this.correspondingRule = e.correspondingRule;
+        this.value = e.value;
+    }
+
     public void deleteFromSequence() {
         if (!isTerminal)
             correspondingRule.decrementCount();
@@ -57,5 +63,13 @@ public class SequenceElement {
             return 103919 * value;
         }
         return correspondingRule.hashCode();
+    }
+
+    public String toString(){
+        if(isTerminal)
+            return Character.toString(value);
+        else{
+            return correspondingRule.getRuleName();
+        }
     }
 }

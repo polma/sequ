@@ -39,6 +39,7 @@ public class DoublyLinkedList {
             last.next = n;
             n.prev = last;
             n.next = null;
+            last = n;
         }
         ++length;
     }
@@ -73,6 +74,15 @@ public class DoublyLinkedList {
 
     public int getLength() {
         return length;
+    }
+
+    public void printContents(){
+        SequenceElement s = first;
+        while(s!=null){
+            System.err.print(s + " ");
+            s = s.next;
+        }
+        System.err.println();
     }
 
 }

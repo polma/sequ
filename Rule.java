@@ -17,13 +17,16 @@ public class Rule {
 
     public Rule() {
         ruleContents = new DoublyLinkedList(this);
+        usageCount = 0;
     }
 
     public int getUsageCount(){
         return usageCount;
     }
 
+
     public Digram replaceDigramWithRule(SequenceElement startingNode, Rule r) {
+        System.err.println("\tReplacing in "+ ruleName + " for " + startingNode.toString() + " " + startingNode.next.toString() + " with " + r.getRuleName());
         final SequenceElement newNode = new SequenceElement(r);
         r.incrementCount();
 
@@ -39,6 +42,16 @@ public class Rule {
         return new Digram(newNode.prev, newNode);
         // maintain rule utility!
 
+    }
+
+    public void deleteDigram(Digram d){
+        System.err.println("\tDeleting digram " + d.first().toString() + " " + d.second().toString() + " in " + ruleName);
+        final SequenceElement beforeDigram = d.first().prev;
+        final SequenceElement afterDigram = d.second().next;
+        System.err.println("\tPrev: " + (beforeDigram == null ? "NULL"  : beforeDigram.toString()) +
+                " Next: " + (afterDigram == null ? "NULL" : afterDigram.toString()));
+        ruleContents.deleteNode(d.first());
+        ruleContents.deleteNode(d.second());
     }
 
     public SequenceElement unwindRule(SequenceElement s, Rule r){
@@ -100,5 +113,10 @@ public class Rule {
 
     public boolean shouldBeDeleted() {
         return usageCount < 2;
+    }
+
+    public void printContents(){
+        System.err.print(ruleName + " -> ");
+        ruleContents.printContents();
     }
 }

@@ -5,6 +5,15 @@ import java.io.*;
 public class Main {
 
     public static void main(String[] args) {
+        Sequitur sq = new Sequitur('a');
+        sq.addLetter('b');
+        sq.addLetter('c');
+        sq.addLetter('b');
+        sq.addLetter('c');
+
+        System.out.println(sq.ruleCount());
+        sq.printRules();
+
         if(args.length != 2){
             System.err.print("Arguments: <input_file> <output_file>");
             return;

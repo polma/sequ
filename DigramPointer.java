@@ -3,17 +3,15 @@ package ii.olma;
 /**
  * Created with IntelliJ IDEA.
  * User: pdr
- * Date: 6/7/13
- * Time: 8:16 PM
+ * Date: 6/11/13
+ * Time: 1:36 PM
  */
 public class DigramPointer {
+    public Rule correspondingRule;
+    public SequenceElement correspondingElement;
 
-    public DigramPointer(DoublyLinkedList list, SequenceElement node) {
-        this.list = list;
-        this.node = node;
+    public DigramPointer(Rule r, SequenceElement s){
+        this.correspondingElement = s;
+        this.correspondingRule = r;
     }
-
-    private DoublyLinkedList list;
-    private SequenceElement node;
-
 }
