@@ -1,5 +1,7 @@
 package ii.olma;
 
+import java.util.ArrayList;
+
 /**
  * Created with IntelliJ IDEA.
  * User: pdr
@@ -15,6 +17,8 @@ public class Rule {
 
     private static final int MAXRULES = 10000000;
     private static boolean takenNumbers[] = new boolean[MAXRULES];
+    public static ArrayList<Rule> rules = new ArrayList<Rule>();
+
 
 
     private SequenceElement guard; // this is where we attach the elements
@@ -26,6 +30,7 @@ public class Rule {
         usageCount = 0;
         ruleName = getNewRuleName();
         guard = new SequenceElement(true, this);
+        rules.add(this);
     }
 
     private static String getNewRuleName() {
@@ -171,6 +176,7 @@ public class Rule {
     public boolean shouldBeDeleted() {
         if(usageCount < 2){
             takenNumbers[Integer.parseInt(ruleName)] = false;
+            rules.remove(this);
             return true;
         }
         return false;
@@ -184,6 +190,14 @@ public class Rule {
         while(!s.isGuard()){
             sb.append(s.toString() + " ");
             s = s.next;
+        }
+        return sb.toString();
+    }
+
+    public static String getAllRules(){
+        StringBuilder sb = new StringBuilder();
+        for(Rule r: rules){
+            sb.append(r.toString() + "\n");
         }
         return sb.toString();
     }

@@ -90,10 +90,11 @@ public class SequenceElement {
     }
 
     public boolean isDigramAlreadyPresent() {
-        if (isGuard)
+        if (next.isGuard || isGuard)
             return false;
         if (!digrams.containsKey(this)) {
             digrams.put(this, this);
+            System.err.println("(ISP) Adding digram " + this.toString() + "-" + this.next.toString());
             return false;
         }
 
@@ -126,6 +127,7 @@ public class SequenceElement {
             r.initiateSequence(s1, s2);
 
             digrams.put(s1,s1);
+            System.err.println("(ENS) Adding digram " + s1.toString() + "-" + s1.next.toString());
 
             matchingDigram.replaceWithRule(r);
             replaceWithRule(r);
@@ -152,6 +154,7 @@ public class SequenceElement {
             final Rule anchor = left.correspondingRule;
             anchor.decrementCount();
             if (anchor.shouldBeDeleted()) {
+                System.err.println("Have to delete!");
                 left.unwind();
             }
         }
