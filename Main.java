@@ -18,7 +18,7 @@ public class Main {
         sq.addLetter('c');
 
         System.out.println(sq.ruleCount());
-        sq.printRules();
+        //sq.printRules();
 
         if(args.length != 2){
             System.err.print("Arguments: <input_file> <output_file>");

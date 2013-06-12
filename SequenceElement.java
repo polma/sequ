@@ -54,7 +54,9 @@ public class SequenceElement {
         if (isTerminal)
             return value == se.value;
         else
-            return correspondingRule == se.correspondingRule;
+            return correspondingRule.getRuleName().equals(se.getCorrespondingRule().getRuleName());
+            // return correspondingRule == se.correspondingRule;
+
     }
 
     @Override

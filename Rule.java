@@ -25,7 +25,7 @@ public class Rule {
     }
 
 
-    public Digram replaceDigramWithRule(SequenceElement startingNode, Rule r) {
+    public SequenceElement replaceDigramWithRule(SequenceElement startingNode, Rule r) {
         System.err.println("\tReplacing in "+ ruleName + " for " + startingNode.toString() + " " + startingNode.next.toString() + " with " + r.getRuleName());
         final SequenceElement newNode = new SequenceElement(r);
         r.incrementCount();
@@ -39,7 +39,7 @@ public class Rule {
         ruleContents.deleteNode(startingNode);
         ruleContents.deleteNode(newNode.next);
 
-        return new Digram(newNode.prev, newNode);
+        return newNode;
         // maintain rule utility!
 
     }
