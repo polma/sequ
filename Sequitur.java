@@ -234,10 +234,10 @@ public class Sequitur {
             printRules();
             ensureDigramUniqueness(new Digram(expansionEnd, expansionEnd.next), recentlyUsedRule, expansionEnd);
         }
-
-        else{
-
-        }
+//
+//        else{
+//
+//        }
 //        if (!right.isTerminal && right.getCorrespondingRule().shouldBeDeleted()) {
 //            recentlyUsedRule.expand(right.getCorrespondingRule(), false);
 //        //    rules.remove(right.getCorrespondingRule());

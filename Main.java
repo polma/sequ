@@ -6,8 +6,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        char test_sequence[] = {'b','c','b','c','b','c'};
-        Sequitur sq = new Sequitur('a');
+        //Sequitur sq = new Sequitur('a');
 //        sq.addLetter('b');
 //        sq.addLetter('c');
 //        sq.addLetter('b');
@@ -17,12 +16,14 @@ public class Main {
 //        sq.addLetter('b');
 //        sq.addLetter('c');
 
-        String test1 = "bcdbcabcd"; //starts with a
-        for(int i = 0; i<test1.length(); ++i)
-            sq.addLetter(test1.charAt(i));
+
+        //rule utility test
+//        String test1 = "bcdbcabcd"; //starts with a
+//        for(int i = 0; i<test1.length(); ++i)
+//            sq.addLetter(test1.charAt(i));
 
 
-        if(args.length != 2){
+        if (args.length != 2) {
             System.err.print("Arguments: <input_file> <output_file>");
             return;
         }
@@ -36,15 +37,23 @@ public class Main {
             e.printStackTrace();
             return;
         }
-
         int r;
+        Sequitur sq = null;
         try {
-            while((r=inputReader.read()) != -1){
-                char c = (char)r;
+            boolean firstRun = true;
+            while ((r = inputReader.read()) != -1) {
+                char c = (char) r;
+                if (firstRun) {
+                    sq = new Sequitur(c);
+                    firstRun = false;
+                } else
+                    sq.addLetter(c);
             }
         } catch (IOException e) {
             System.err.println("Something went wrong while reading the input.");
             e.printStackTrace();
         }
+
+        sq.printRules();
     }
 }

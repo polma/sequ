@@ -91,12 +91,6 @@ public class Rule {
         return getLastElement().prev;
     }
 
-    public SequenceElement replaceFront2(Rule r){
-        final DoublyLinkedList replacement = r.getContents();
-        ruleContents.replaceFront(replacement);
-        return getLastElement().prev;
-    }
-
     public DoublyLinkedList getContents() {
         return ruleContents;
     }
