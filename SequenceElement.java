@@ -14,7 +14,7 @@ public class SequenceElement {
     public SequenceElement next;
     public SequenceElement prev;
 
-    public boolean isRuleOfLengthTwo(){
+    public boolean isRuleOfLengthTwo() {
         return this.prev == null && this.next != null && this.next.next == null;
     }
 
@@ -29,7 +29,7 @@ public class SequenceElement {
         this.isTerminal = false;
     }
 
-    public SequenceElement(SequenceElement e){
+    public SequenceElement(SequenceElement e) {
         this.isTerminal = e.isTerminal;
         this.correspondingRule = e.correspondingRule;
         this.value = e.value;
@@ -40,7 +40,7 @@ public class SequenceElement {
             correspondingRule.decrementCount();
     }
 
-    public Rule getCorrespondingRule(){
+    public Rule getCorrespondingRule() {
         return correspondingRule;
     }
 
@@ -49,28 +49,27 @@ public class SequenceElement {
         if (o == null)
             return false;
         final SequenceElement se = (SequenceElement) o;
-        if (isTerminal != se.isTerminal)
-            return false;
-        if (isTerminal)
-            return value == se.value;
-        else
-            return correspondingRule.getRuleName().equals(se.getCorrespondingRule().getRuleName());
-            // return correspondingRule == se.correspondingRule;
+        return (getNumericalRepresentation() == se.getNumericalRepresentation()) &&
+                (next.getNumericalRepresentation() == se.next.getNumericalRepresentation());
+    }
 
+    private int getNumericalRepresentation() {
+        if (isTerminal)
+            return (int) value;
+        else
+            return Constants.CHARMAX + Integer.parseInt(correspondingRule.getRuleName());
     }
 
     @Override
     public int hashCode() {
-        if (value != 0) {
-            return 103919 * value;
-        }
-        return correspondingRule.hashCode();
+        return (Constants.PRIME1 * getNumericalRepresentation() +
+                Constants.PRIME2 * next.getNumericalRepresentation()) % Constants.LARGE_PRIME;
     }
 
-    public String toString(){
-        if(isTerminal)
+    public String toString() {
+        if (isTerminal)
             return Character.toString(value);
-        else{
+        else {
             return correspondingRule.getRuleName();
         }
     }
