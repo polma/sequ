@@ -23,8 +23,7 @@ public class Sequitur {
     public Sequitur(char firstChar) {
         rules = new ArrayList<Rule>();
         startingRule = new Rule();
-        startingRule.incrementCount();
-        startingRule.incrementCount(); // not yet sure if this is needed
+        startingRule.incrementCount(2);
         startingRule.append(new SequenceElement(firstChar));
         startingRule.setRuleName("0");
         rules.add(startingRule); // the main rule (eg the starting symbol)
@@ -72,10 +71,18 @@ public class Sequitur {
             final SequenceElement correspondingStart = digrams.get(d).correspondingElement;
             System.err.println("Found the same: " + correspondingStart.toString() + " " + correspondingStart.next.toString() + " in rule " + correspondingRule.getRuleName());
 
-            if( (correspondingStart.next == digramStart && correspondingStart.equals(digramStart) && digramStart.equals(digramStart.next)) ||
-                    (correspondingStart == digramStart.next && correspondingStart.equals(digramStart) && correspondingStart.equals(correspondingStart.next) ) ){
+            if ((correspondingStart.next == digramStart && correspondingStart.equals(digramStart) && digramStart.equals(digramStart.next)) ||
+                    (correspondingStart == digramStart.next && correspondingStart.equals(digramStart) && correspondingStart.equals(correspondingStart.next))) {
                 System.err.println("Triple detected!");
                 return;
+            }
+
+            //count usage changes
+            if (!d.first().isTerminal) {
+                d.first().getCorrespondingRule().decrementCount();
+            }
+            if (!d.second().isTerminal) {
+                d.second().getCorrespondingRule().decrementCount();
             }
 
             if (correspondingRule.getLength() == 2) {
@@ -88,23 +95,26 @@ public class Sequitur {
 
                 Digram newDigramLeft, newDigramRight;
 
+                //take care of usage counts
+                correspondingRule.incrementCount(1);
+
+
                 if (replacementStart.prev != null) {
                     //triple edge case
-                   // if (!(replacementStart.prev.equals(replacementStart) && replacementStart.prev.prev != null && replacementStart.prev.prev.equals(replacementStart))) {
-                        newDigramLeft = new Digram(replacementStart.prev, replacementStart);
-                        ensureDigramUniqueness(newDigramLeft, r, replacementStart.prev);
+                    // if (!(replacementStart.prev.equals(replacementStart) && replacementStart.prev.prev != null && replacementStart.prev.prev.equals(replacementStart))) {
+                    newDigramLeft = new Digram(replacementStart.prev, replacementStart);
+                    ensureDigramUniqueness(newDigramLeft, r, replacementStart.prev);
                     //}
                 }
 
                 if (replacementStart.next != null) {
-                  //  if (!(replacementStart.next.equals(replacementStart) && replacementStart.next.next != null && replacementStart.next.next.equals(replacementStart))) {
-                        newDigramRight = new Digram(replacementStart, replacementStart.next);
-                        ensureDigramUniqueness(newDigramRight, r, replacementStart);
-                  //  }
+                    //  if (!(replacementStart.next.equals(replacementStart) && replacementStart.next.next != null && replacementStart.next.next.equals(replacementStart))) {
+                    newDigramRight = new Digram(replacementStart, replacementStart.next);
+                    ensureDigramUniqueness(newDigramRight, r, replacementStart);
+                    //  }
                 }
-                //also the count changes
-//                if(!d.first().isTerminal)
-//                    ensureRuleUtility(d.first().getCorrespondingRule(), d.first());
+               ensureUtility(correspondingRule, d);
+
             } else {
 
                 System.err.println("Creating a new rule");
@@ -113,16 +123,20 @@ public class Sequitur {
                 newRule.append(new SequenceElement(d.second()));
                 rules.add(newRule);
                 newRule.setRuleName(getNewRuleName());
+                newRule.incrementCount(2);
 
                 //remove digrams that will disappear
                 removeDestroyedDigrams(digramStart);
                 removeDestroyedDigrams(correspondingStart);
 
                 //also remove the digram XY as it changes location
+                printDigrams();
                 digrams.remove(d);
+                printDigrams();
 
                 final Digram digramInNewRule = new Digram(newRule.getFirstElement(), newRule.getFirstElement().next);
                 digrams.put(digramInNewRule, new DigramPointer(newRule, newRule.getFirstElement()));
+                printDigrams();
 
                 //edge case - two digrams to replace are in the same rule and next to each other
                 boolean digramsNextToEachOther = false;
@@ -172,11 +186,81 @@ public class Sequitur {
 
 
                 // ensure utility of the first symbol
+                ensureUtility(newRule, digramInNewRule);
                 //ensureRuleUtility(node.getCorrespondingRule(), node);
             }
+
         } else {
             digrams.put(d, new DigramPointer(r, digramStart));
         }
+    }
+
+    private void ensureUtility(Rule recentlyUsedRule, Digram toRemove) {
+
+
+        final SequenceElement left = recentlyUsedRule.getFirstElement();
+        final SequenceElement right = recentlyUsedRule.getLastElement();
+        assert (left.next == right);
+
+        SequenceElement expansionEnd = left;
+        final Rule leftRule = left.getCorrespondingRule();
+        if (!left.isTerminal && leftRule.shouldBeDeleted()) {
+
+            System.err.print("Found a rule to expand: ");
+            leftRule.printContents();
+            System.err.print("Expanding in: ");
+            recentlyUsedRule.printContents();
+            printRules();
+            printDigrams();
+
+            //delete the digram formed by the left non terminal and the second element
+            digrams.remove(toRemove);
+
+            //also delete (change the location) of the digrams from expansion
+            SequenceElement startingElement = leftRule.getFirstElement().next;
+            while(startingElement != null){
+                digrams.put(new Digram(startingElement.prev, startingElement), new DigramPointer(recentlyUsedRule, startingElement.prev));
+                startingElement = startingElement.next;
+            }
+            printDigrams();
+
+            expansionEnd = recentlyUsedRule.replaceFront(leftRule);
+
+            rules.remove(leftRule);
+            availableNumbers[Integer.parseInt(leftRule.getRuleName())] = true;
+            assert (expansionEnd != null);
+
+            System.err.println("Expansion end: " + expansionEnd.toString() + " " + expansionEnd.next);
+            printRules();
+            ensureDigramUniqueness(new Digram(expansionEnd, expansionEnd.next), recentlyUsedRule, expansionEnd);
+        }
+
+        else{
+
+        }
+//        if (!right.isTerminal && right.getCorrespondingRule().shouldBeDeleted()) {
+//            recentlyUsedRule.expand(right.getCorrespondingRule(), false);
+//        //    rules.remove(right.getCorrespondingRule());
+//        //    availableNumbers[Integer.parseInt(right.getCorrespondingRule().getRuleName())] = true;
+//        }
+
+
+    }
+
+    private void ensureUtilityOld(Rule recentlyUsedRule) {
+        final SequenceElement left = recentlyUsedRule.getFirstElement();
+        final SequenceElement right = recentlyUsedRule.getLastElement();
+        assert (left.next == right);
+
+        SequenceElement expansionEnd = left;
+        if (!left.isTerminal && left.getCorrespondingRule().shouldBeDeleted()) {
+            expansionEnd = left.getCorrespondingRule().unwindRule(left, recentlyUsedRule);
+        }
+        if (!right.isTerminal && right.getCorrespondingRule().shouldBeDeleted()) {
+            right.getCorrespondingRule().unwindRule(right, recentlyUsedRule);
+        }
+
+        ensureDigramUniqueness(new Digram(expansionEnd, expansionEnd.next), recentlyUsedRule, expansionEnd);
     }
 
     private boolean checkForward(SequenceElement digramStart, SequenceElement correspondingStart) {
@@ -196,14 +280,16 @@ public class Sequitur {
         }
     }
 
-    private void ensureRuleUtility(Rule r, SequenceElement s) {
-        if (r.shouldBeDeleted()) {
+    private void ensureRuleUtility(Rule ruleWithOccurence, SequenceElement s) {
+        if (ruleWithOccurence.shouldBeDeleted()) {
             final Rule anchor = s.getCorrespondingRule();
-            final SequenceElement prev = anchor.unwindRule(s, r);
+            final SequenceElement prev = anchor.unwindRule(s, ruleWithOccurence);
             final SequenceElement next = s.next;
             final Digram d = new Digram(prev, next);
             ensureDigramUniqueness(d, anchor, null);
-            rules.remove(r);
+
+            rules.remove(ruleWithOccurence);
+            availableNumbers[Integer.parseInt(ruleWithOccurence.getRuleName())] = true;
         }
     }
 

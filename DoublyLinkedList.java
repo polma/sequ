@@ -25,7 +25,7 @@ public class DoublyLinkedList {
         return last;
     }
 
-    public SequenceElement getFirst(){
+    public SequenceElement getFirst() {
         return first;
     }
 
@@ -42,6 +42,27 @@ public class DoublyLinkedList {
             last = n;
         }
         ++length;
+    }
+
+    public void incrementSize(int i) {
+        length += i;
+    }
+
+    public void setLastElement(SequenceElement e) {
+        last = e;
+    }
+
+    public void replaceFront(DoublyLinkedList d){
+        d.append(last);
+
+        length += d.length - 1;
+
+        d.first.next = first.next;
+        first = d.first;
+        d.first.next.prev = first;
+
+        //last = d.last;
+
     }
 
     public void deleteNode(SequenceElement n) {
@@ -76,9 +97,9 @@ public class DoublyLinkedList {
         return length;
     }
 
-    public void printContents(){
+    public void printContents() {
         SequenceElement s = first;
-        while(s!=null){
+        while (s != null) {
             System.err.print(s + " ");
             s = s.next;
         }

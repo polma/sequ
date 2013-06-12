@@ -20,15 +20,15 @@ public class Rule {
         usageCount = 0;
     }
 
-    public int getUsageCount(){
+    public int getUsageCount() {
         return usageCount;
     }
 
 
     public SequenceElement replaceDigramWithRule(SequenceElement startingNode, Rule r) {
-        System.err.println("\tReplacing in "+ ruleName + " for " + startingNode.toString() + " " + startingNode.next.toString() + " with " + r.getRuleName());
+        System.err.println("\tReplacing in " + ruleName + " for " + startingNode.toString() + " " + startingNode.next.toString() + " with " + r.getRuleName());
         final SequenceElement newNode = new SequenceElement(r);
-        r.incrementCount();
+        //r.incrementCount(); //done in main loop
 
         SequenceElement s = startingNode;
         s.deleteFromSequence();
@@ -40,21 +40,20 @@ public class Rule {
         ruleContents.deleteNode(newNode.next);
 
         return newNode;
-        // maintain rule utility!
 
     }
 
-    public void deleteDigram(Digram d){
+    public void deleteDigram(Digram d) {
         System.err.println("\tDeleting digram " + d.first().toString() + " " + d.second().toString() + " in " + ruleName);
         final SequenceElement beforeDigram = d.first().prev;
         final SequenceElement afterDigram = d.second().next;
-        System.err.println("\tPrev: " + (beforeDigram == null ? "NULL"  : beforeDigram.toString()) +
+        System.err.println("\tPrev: " + (beforeDigram == null ? "NULL" : beforeDigram.toString()) +
                 " Next: " + (afterDigram == null ? "NULL" : afterDigram.toString()));
         ruleContents.deleteNode(d.first());
         ruleContents.deleteNode(d.second());
     }
 
-    public SequenceElement unwindRule(SequenceElement s, Rule r){
+    public SequenceElement unwindRule(SequenceElement s, Rule r) {
         final SequenceElement temp = new SequenceElement('c');
         final DoublyLinkedList replacement = r.getContents();
         ruleContents.insertBefore(s, temp);
@@ -66,7 +65,39 @@ public class Rule {
         return replacement.getLast();
     }
 
-    public DoublyLinkedList getContents(){
+    public SequenceElement expand(Rule r, boolean isFirst) {
+        System.err.print("Expanding rule: ");
+        r.printContents();
+        final DoublyLinkedList replacement = r.getContents();
+
+        if (isFirst) {
+            replacement.append(getLastElement());
+            ruleContents = replacement;
+            return getLastElement().prev;
+        } else {
+            ruleContents.getLast().prev.next = replacement.getFirst();
+            replacement.getFirst().prev = ruleContents.getLast().prev;
+
+            ruleContents.incrementSize(replacement.getLength() - 1);
+            ruleContents.setLastElement(replacement.getLast());
+            return null;
+        }
+    }
+
+    public SequenceElement replaceFront(Rule r){
+        final SequenceElement last = getLastElement();
+        ruleContents = r.getContents();
+        append(last);
+        return getLastElement().prev;
+    }
+
+    public SequenceElement replaceFront2(Rule r){
+        final DoublyLinkedList replacement = r.getContents();
+        ruleContents.replaceFront(replacement);
+        return getLastElement().prev;
+    }
+
+    public DoublyLinkedList getContents() {
         return ruleContents;
     }
 
@@ -74,7 +105,7 @@ public class Rule {
         return ruleContents.getLast();
     }
 
-    public SequenceElement getFirstElement(){
+    public SequenceElement getFirstElement() {
         return ruleContents.getFirst();
     }
 
@@ -103,8 +134,8 @@ public class Rule {
     }
 
 
-    public void incrementCount() {
-        ++usageCount;
+    public void incrementCount(int i) {
+        usageCount += i;
     }
 
     public void decrementCount() {
@@ -115,8 +146,9 @@ public class Rule {
         return usageCount < 2;
     }
 
-    public void printContents(){
+    public void printContents() {
         System.err.print(ruleName + " -> ");
         ruleContents.printContents();
     }
+
 }

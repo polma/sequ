@@ -8,17 +8,19 @@ public class Main {
 
         char test_sequence[] = {'b','c','b','c','b','c'};
         Sequitur sq = new Sequitur('a');
-        sq.addLetter('b');
-        sq.addLetter('c');
-        sq.addLetter('b');
-        sq.addLetter('c');
-        sq.addLetter('b');
-        sq.addLetter('c');
-        sq.addLetter('b');
-        sq.addLetter('c');
+//        sq.addLetter('b');
+//        sq.addLetter('c');
+//        sq.addLetter('b');
+//        sq.addLetter('c');
+//        sq.addLetter('b');
+//        sq.addLetter('c');
+//        sq.addLetter('b');
+//        sq.addLetter('c');
 
-        System.out.println(sq.ruleCount());
-        //sq.printRules();
+        String test1 = "bcdbcabcd"; //starts with a
+        for(int i = 0; i<test1.length(); ++i)
+            sq.addLetter(test1.charAt(i));
+
 
         if(args.length != 2){
             System.err.print("Arguments: <input_file> <output_file>");
