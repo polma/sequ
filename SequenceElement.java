@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class SequenceElement {
     public boolean isTerminal;
-    private Rule correspondingRule;
+    public Rule correspondingRule;
     private boolean isGuard;
     private char value;
 
@@ -90,7 +90,7 @@ public class SequenceElement {
     }
 
     public boolean isDigramAlreadyPresent() {
-        if (this.isGuard)
+        if (isGuard)
             return false;
         if (!digrams.containsKey(this)) {
             digrams.put(this, this);
@@ -139,12 +139,17 @@ public class SequenceElement {
         final SequenceElement left = recentlyUsedRule.getFirstSequenceElement();
         final SequenceElement right = recentlyUsedRule.getLastSequenceElement();
 
+        System.err.println("Ensuring utility of: " + left.toString() + " and " + right.toString());
+
+        assert(left!=null);
+        assert(right!=null);
+
         if (!right.isTerminal && !right.isGuard) {
-            right.getCorrespondingRule().decrementCount();
+            right.correspondingRule.decrementCount();
         }
 
         if (!left.isTerminal && !left.isGuard) {
-            final Rule anchor = left.getCorrespondingRule();
+            final Rule anchor = left.correspondingRule;
             anchor.decrementCount();
             if (anchor.shouldBeDeleted()) {
                 left.unwind();
@@ -153,8 +158,8 @@ public class SequenceElement {
     }
 
     private void unwind(){
-        makeLink(prev, getCorrespondingRule().getFirstSequenceElement());
-        makeLink(getCorrespondingRule().getLastSequenceElement(), next);
+        makeLink(prev, correspondingRule.getFirstSequenceElement());
+        makeLink(correspondingRule.getLastSequenceElement(), next);
     }
 
     private void removeDigrams() {
