@@ -13,15 +13,46 @@ public class Rule {
     private int usageCount;
     public int indexInRulesArray;
 
+    private static boolean availableNumbers[];
+    private static final int MAXRULES = 10000000;
+
+    private SequenceElement guard; // this is where we attach the elements
+
     private DoublyLinkedList ruleContents;
 
     public Rule() {
         ruleContents = new DoublyLinkedList(this);
         usageCount = 0;
+        ruleName = getNewRuleName();
+        guard = new SequenceElement(true, this);
+    }
+
+    private static String getNewRuleName() {
+        int i = 0;
+        while (!availableNumbers[i]) ++i;
+        availableNumbers[i] = false;
+        return String.valueOf(i);
     }
 
     public int getUsageCount() {
         return usageCount;
+    }
+
+    public void initiateSequence(SequenceElement s1, SequenceElement s2){
+        guard.next = s1;
+        s1.prev = guard;
+        s1.next = s2;
+        s2.prev = s1;
+        s2.next = guard;
+        guard.prev = s2;
+    }
+
+    public SequenceElement getFirstSequenceElement(){
+        return guard.next;
+    }
+
+    public SequenceElement getLastSequenceElement(){
+        return guard.prev;
     }
 
 

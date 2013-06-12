@@ -1,5 +1,7 @@
 package ii.olma;
 
+import java.util.HashMap;
+
 /**
  * Created with IntelliJ IDEA.
  * User: pdr
@@ -9,18 +11,19 @@ package ii.olma;
 public class SequenceElement {
     public boolean isTerminal;
     private Rule correspondingRule;
+    private boolean isGuard;
     private char value;
 
     public SequenceElement next;
     public SequenceElement prev;
 
-    public boolean isRuleOfLengthTwo() {
-        return this.prev == null && this.next != null && this.next.next == null;
-    }
+    private static HashMap<SequenceElement, SequenceElement> digrams =
+            new HashMap<SequenceElement, SequenceElement>(Constants.LARGE_PRIME);
 
     public SequenceElement(char value) {
         this.isTerminal = true;
         this.value = value;
+
     }
 
     public SequenceElement(Rule r) {
@@ -29,10 +32,21 @@ public class SequenceElement {
         this.isTerminal = false;
     }
 
+    public SequenceElement(boolean isGuard, Rule r) {
+        if (isGuard == true)
+            this.isGuard = true;
+        this.correspondingRule = r;
+        this.value = 0;
+    }
+
     public SequenceElement(SequenceElement e) {
         this.isTerminal = e.isTerminal;
         this.correspondingRule = e.correspondingRule;
         this.value = e.value;
+    }
+
+    public boolean startsRuleOfLengthTwo() {
+        return this.prev.isGuard && this.next != null && this.next.next.isGuard;
     }
 
     public void deleteFromSequence() {
@@ -41,7 +55,116 @@ public class SequenceElement {
     }
 
     public Rule getCorrespondingRule() {
-        return correspondingRule;
+        return prev.correspondingRule;
+    }
+
+    //make link between two symbols (this introduces a bigram)
+    public static void makeLink(SequenceElement left, SequenceElement right) {
+        assert (left != null);
+        assert (right != null);
+
+        if (left.next != null)
+            left.deleteDigramFromSequence();
+
+        left.next = right;
+        right.prev = left;
+    }
+
+    public void deleteDigramFromSequence() {
+        if (isGuard) return;
+
+        if (digrams.get(this) == this)
+            digrams.remove(this);
+    }
+
+    public void append(SequenceElement s) {
+        makeLink(this, s);
+        makeLink(s, next);
+    }
+
+    public boolean isDigramAlreadyPresent() {
+        if (this.isGuard)
+            return false;
+        if (!digrams.containsKey(this)) {
+            digrams.put(this, this);
+            return false;
+        }
+
+        final SequenceElement correspondingDigram = digrams.get(this);
+        //account for triple case
+        if (correspondingDigram == this)
+            return true;
+
+        ensureDigramUniqueness(correspondingDigram);
+        return true;
+    }
+
+    private void ensureDigramUniqueness(SequenceElement matchingDigram) {
+        //remember to decrease counts of the two symbols
+
+        if (matchingDigram.startsRuleOfLengthTwo()) {
+            //reuse that rule
+            final Rule ruleToReuse = matchingDigram.getCorrespondingRule();
+            replaceWithRule(ruleToReuse);
+            ensureRuleUtility(ruleToReuse);
+
+        } else {
+            //create a new rule
+            final Rule r = new Rule();
+            final SequenceElement s1 = new SequenceElement(this);
+            final SequenceElement s2 = new SequenceElement(next);
+            r.initiateSequence(s1, s2);
+
+            matchingDigram.replaceWithRule(r);
+            replaceWithRule(r);
+
+            ensureRuleUtility(r);
+        }
+    }
+
+    private void ensureRuleUtility(Rule recentlyUsedRule) {
+        //update the usages and check if needs to be expanded
+        final SequenceElement left = recentlyUsedRule.getFirstSequenceElement();
+        final SequenceElement right = recentlyUsedRule.getLastSequenceElement();
+
+        if (!right.isTerminal && !right.isGuard) {
+            right.getCorrespondingRule().decrementCount();
+        }
+
+        if (!left.isTerminal && !left.isGuard) {
+            final Rule anchor = left.getCorrespondingRule();
+            anchor.decrementCount();
+            if (anchor.shouldBeDeleted()) {
+                left.unwind();
+            }
+        }
+    }
+
+    private void unwind(){
+        makeLink(prev, getCorrespondingRule().getFirstSequenceElement());
+        makeLink(getCorrespondingRule().getLastSequenceElement(), next);
+    }
+
+    private void removeDigrams() {
+        makeLink(prev, next);
+        if (!isGuard) {
+            deleteDigramFromSequence();
+            if (!isTerminal)
+                correspondingRule.decrementCount();
+        }
+
+    }
+
+    private void replaceWithRule(Rule r) {
+        final SequenceElement toAdd = new SequenceElement(r);
+        //two digrams to delete
+        removeDigrams();
+        next.removeDigrams();
+        prev.append(toAdd);
+        r.incrementCount(1);
+        if (prev.isDigramAlreadyPresent())
+            prev.next.isDigramAlreadyPresent();
+
     }
 
     @Override
