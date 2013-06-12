@@ -15,10 +15,14 @@ public class SequenceElement {
     private boolean isGuard;
     private char value;
 
+    public boolean isGuard(){
+        return isGuard;
+    }
+
     public SequenceElement next;
     public SequenceElement prev;
 
-    private static HashMap<SequenceElement, SequenceElement> digrams =
+    public static HashMap<SequenceElement, SequenceElement> digrams =
             new HashMap<SequenceElement, SequenceElement>(Constants.LARGE_PRIME);
 
     public SequenceElement(char value) {
@@ -81,8 +85,8 @@ public class SequenceElement {
     }
 
     public void append(SequenceElement s) {
-        makeLink(this, s);
         makeLink(s, next);
+        makeLink(this, s);
     }
 
     public boolean isDigramAlreadyPresent() {
@@ -108,6 +112,7 @@ public class SequenceElement {
         if (matchingDigram.startsRuleOfLengthTwo()) {
             //reuse that rule
             final Rule ruleToReuse = matchingDigram.getCorrespondingRule();
+            System.err.println("Reusing rule: " + ruleToReuse.toString());
             replaceWithRule(ruleToReuse);
             ensureRuleUtility(ruleToReuse);
 
@@ -116,7 +121,11 @@ public class SequenceElement {
             final Rule r = new Rule();
             final SequenceElement s1 = new SequenceElement(this);
             final SequenceElement s2 = new SequenceElement(next);
+            System.err.println("Creating new rule from " + s1.toString() + " and " + s2.toString());
+
             r.initiateSequence(s1, s2);
+
+            digrams.put(s1,s1);
 
             matchingDigram.replaceWithRule(r);
             replaceWithRule(r);
@@ -165,7 +174,7 @@ public class SequenceElement {
         next.removeDigrams();
         prev.append(toAdd);
         r.incrementCount(1);
-        if (prev.isDigramAlreadyPresent())
+        if (!prev.isDigramAlreadyPresent())
             prev.next.isDigramAlreadyPresent();
 
     }
@@ -206,7 +215,7 @@ public class SequenceElement {
 //        }
     }
 
-    public void printDigrams() {
+    public static void printDigrams() {
         System.err.print("Digrams: ");
         for (Map.Entry<SequenceElement, SequenceElement> e : digrams.entrySet()) {
             System.err.print(e.getKey().toString() + "-" + e.getKey().next.toString() + "  ");

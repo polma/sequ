@@ -20,12 +20,13 @@ public class Main {
 
         //rule utility test
         String test1 = "abcdbcabcd"; //starts with a
-        for(int i = 0; i<test1.length(); ++i)
+        for(int i = 0; i<test1.length(); ++i){
             sq.addLetter(test1.charAt(i));
+            sq.printStart();
+            System.err.println();
+            SequenceElement.printDigrams();
 
-        sq.printStart();
-
-
+        }
 
         if (args.length != 20) {
             System.err.print("Arguments: <input_file> <output_file>");

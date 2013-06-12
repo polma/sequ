@@ -181,11 +181,13 @@ public class Rule {
         sb.append(ruleName);
         sb.append(" -> ");
         SequenceElement s = guard.next;
-        while(s != null)
+        while(!s.isGuard()){
             sb.append(s.toString() + " ");
+            s = s.next;
+        }
         return sb.toString();
-                
     }
+
 
     public void printContents() {
         System.err.print(ruleName + " -> ");
