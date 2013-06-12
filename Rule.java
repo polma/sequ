@@ -13,8 +13,9 @@ public class Rule {
     private int usageCount;
     public int indexInRulesArray;
 
-    private static boolean availableNumbers[];
     private static final int MAXRULES = 10000000;
+    private static boolean takenNumbers[] = new boolean[MAXRULES];
+
 
     private SequenceElement guard; // this is where we attach the elements
 
@@ -29,8 +30,8 @@ public class Rule {
 
     private static String getNewRuleName() {
         int i = 0;
-        while (!availableNumbers[i]) ++i;
-        availableNumbers[i] = false;
+        while (takenNumbers[i]) ++i;
+        takenNumbers[i] = true;
         return String.valueOf(i);
     }
 
@@ -168,7 +169,22 @@ public class Rule {
     }
 
     public boolean shouldBeDeleted() {
-        return usageCount < 2;
+        if(usageCount < 2){
+            takenNumbers[Integer.parseInt(ruleName)] = false;
+            return true;
+        }
+        return false;
+    }
+
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(ruleName);
+        sb.append(" -> ");
+        SequenceElement s = guard.next;
+        while(s != null)
+            sb.append(s.toString() + " ");
+        return sb.toString();
+                
     }
 
     public void printContents() {

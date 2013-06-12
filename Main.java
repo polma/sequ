@@ -6,6 +6,7 @@ public class Main {
 
     public static void main(String[] args) {
 
+        NewSequitur sq = new NewSequitur();
         //Sequitur sq = new Sequitur('a');
 //        sq.addLetter('b');
 //        sq.addLetter('c');
@@ -18,12 +19,15 @@ public class Main {
 
 
         //rule utility test
-//        String test1 = "bcdbcabcd"; //starts with a
-//        for(int i = 0; i<test1.length(); ++i)
-//            sq.addLetter(test1.charAt(i));
+        String test1 = "abcdbcabcd"; //starts with a
+        for(int i = 0; i<test1.length(); ++i)
+            sq.addLetter(test1.charAt(i));
+
+        sq.printStart();
 
 
-        if (args.length != 2) {
+
+        if (args.length != 20) {
             System.err.print("Arguments: <input_file> <output_file>");
             return;
         }
@@ -38,22 +42,22 @@ public class Main {
             return;
         }
         int r;
-        Sequitur sq = null;
+        Sequitur asq = null;
         try {
             boolean firstRun = true;
             while ((r = inputReader.read()) != -1) {
                 char c = (char) r;
                 if (firstRun) {
-                    sq = new Sequitur(c);
+                    asq = new Sequitur(c);
                     firstRun = false;
                 } else
-                    sq.addLetter(c);
+                    asq.addLetter(c);
             }
         } catch (IOException e) {
             System.err.println("Something went wrong while reading the input.");
             e.printStackTrace();
         }
 
-        sq.printRules();
+        asq.printRules();
     }
 }

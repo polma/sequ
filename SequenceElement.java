@@ -1,6 +1,7 @@
 package ii.olma;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,6 +37,8 @@ public class SequenceElement {
         if (isGuard == true)
             this.isGuard = true;
         this.correspondingRule = r;
+        this.next = this;
+        this.prev = this;
         this.value = 0;
     }
 
@@ -195,5 +198,19 @@ public class SequenceElement {
         else {
             return correspondingRule.getRuleName();
         }
+    }
+
+    public void printRules() {
+//        for (Rule r : rules) {
+//            r.printContents();
+//        }
+    }
+
+    public void printDigrams() {
+        System.err.print("Digrams: ");
+        for (Map.Entry<SequenceElement, SequenceElement> e : digrams.entrySet()) {
+            System.err.print(e.getKey().toString() + "-" + e.getKey().next.toString() + "  ");
+        }
+        System.err.println();
     }
 }
