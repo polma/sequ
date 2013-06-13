@@ -1,6 +1,7 @@
 package ii.olma;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,7 +19,6 @@ public class Rule {
     private static final int MAXRULES = 10000000;
     private static boolean takenNumbers[] = new boolean[MAXRULES];
     public static ArrayList<Rule> rules = new ArrayList<Rule>();
-
 
 
     private SequenceElement guard; // this is where we attach the elements
@@ -44,7 +44,7 @@ public class Rule {
         return usageCount;
     }
 
-    public void initiateSequence(SequenceElement s1, SequenceElement s2){
+    public void initiateSequence(SequenceElement s1, SequenceElement s2) {
         guard.next = s1;
         s1.prev = guard;
         s1.next = s2;
@@ -53,11 +53,11 @@ public class Rule {
         guard.prev = s2;
     }
 
-    public SequenceElement getFirstSequenceElement(){
+    public SequenceElement getFirstSequenceElement() {
         return guard.next;
     }
 
-    public SequenceElement getLastSequenceElement(){
+    public SequenceElement getLastSequenceElement() {
         return guard.prev;
     }
 
@@ -121,7 +121,7 @@ public class Rule {
         }
     }
 
-    public SequenceElement replaceFront(Rule r){
+    public SequenceElement replaceFront(Rule r) {
         final SequenceElement last = getLastElement();
         ruleContents = r.getContents();
         append(last);
@@ -170,11 +170,12 @@ public class Rule {
     }
 
     public void decrementCount() {
+        System.err.println("Decrementing count for:" +getRuleName());
         --usageCount;
     }
 
     public boolean shouldBeDeleted() {
-        if(usageCount < 2){
+        if (usageCount < 2) {
             takenNumbers[Integer.parseInt(ruleName)] = false;
             rules.remove(this);
             return true;
@@ -182,22 +183,25 @@ public class Rule {
         return false;
     }
 
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        sb.append(getUsageCount());
+        sb.append("]");
         sb.append(ruleName);
-        sb.append(" -> ");
+        sb.append(" ->");
         SequenceElement s = guard.next;
-        while(!s.isGuard()){
-            sb.append(s.toString() + " ");
+        while (!s.isGuard()) {
+            sb.append(" " + s.toString());
             s = s.next;
         }
         return sb.toString();
     }
 
-    public static String getAllRules(){
+    public static String getAllRules() {
         StringBuilder sb = new StringBuilder();
-        for(Rule r: rules){
-            sb.append(r.toString() + "\n");
+        for (Rule r : rules) {
+            sb.append(r.toString()+"\n");
         }
         return sb.toString();
     }
@@ -206,6 +210,44 @@ public class Rule {
     public void printContents() {
         System.err.print(ruleName + " -> ");
         ruleContents.printContents();
+    }
+
+    final static HashMap<Rule, String> hs = new HashMap<Rule, String>();
+
+    public String getFullWord() {
+        StringBuilder sb = new StringBuilder();
+
+        SequenceElement s = guard.prev;
+        while (!s.isGuard()) {
+            if (s.isTerminal) {
+                s = s.prev;
+                continue;
+            }
+
+            if (!hs.containsKey(s.correspondingRule)) {
+                final String full = s.correspondingRule.getFullWord();
+                hs.put(s.correspondingRule, full);
+            }
+            s = s.prev;
+        }
+
+        s = guard.next;
+        while (!s.isGuard()) {
+            if (s.isTerminal) {
+                sb.append(s.getValue());
+            } else {
+                if (hs.containsKey(s.correspondingRule)) {
+                    sb.append(hs.get(s.correspondingRule));
+                } else {
+                    final String full = s.correspondingRule.getFullWord();
+                    sb.append(full);
+                    hs.put(s.correspondingRule, full);
+                }
+            }
+            s = s.next;
+        }
+
+        return sb.toString();
     }
 
 }

@@ -19,6 +19,10 @@ public class SequenceElement {
         return isGuard;
     }
 
+    public char getValue(){
+        return value;
+    }
+
     public SequenceElement next;
     public SequenceElement prev;
 
@@ -94,7 +98,7 @@ public class SequenceElement {
             return false;
         if (!digrams.containsKey(this)) {
             digrams.put(this, this);
-            System.err.println("(ISP) Adding digram " + this.toString() + "-" + this.next.toString());
+           System.err.println("(ISP) Adding digram " + this.toString() + "-" + this.next.toString());
             return false;
         }
 
@@ -113,7 +117,7 @@ public class SequenceElement {
         if (matchingDigram.startsRuleOfLengthTwo()) {
             //reuse that rule
             final Rule ruleToReuse = matchingDigram.getCorrespondingRule();
-            System.err.println("Reusing rule: " + ruleToReuse.toString());
+           System.err.println("Reusing rule: " + ruleToReuse.toString());
             replaceWithRule(ruleToReuse);
             ensureRuleUtility(ruleToReuse);
 
@@ -122,12 +126,14 @@ public class SequenceElement {
             final Rule r = new Rule();
             final SequenceElement s1 = new SequenceElement(this);
             final SequenceElement s2 = new SequenceElement(next);
-            System.err.println("Creating new rule from " + s1.toString() + " and " + s2.toString());
+            if(!s1.isTerminal) s1.correspondingRule.incrementCount(1);
+            if(!s2.isTerminal) s2.correspondingRule.incrementCount(1);
+           System.err.println("Creating new rule from " + s1.toString() + " and " + s2.toString());
 
             r.initiateSequence(s1, s2);
 
             digrams.put(s1,s1);
-            System.err.println("(ENS) Adding digram " + s1.toString() + "-" + s1.next.toString());
+           System.err.println("(ENS) Adding digram " + s1.toString() + "-" + s1.next.toString());
 
             matchingDigram.replaceWithRule(r);
             replaceWithRule(r);
@@ -141,18 +147,18 @@ public class SequenceElement {
         final SequenceElement left = recentlyUsedRule.getFirstSequenceElement();
         final SequenceElement right = recentlyUsedRule.getLastSequenceElement();
 
-        System.err.println("Ensuring utility of: " + left.toString() + " and " + right.toString());
+       System.err.println("Ensuring utility of: " + left.toString() + " and " + right.toString());
 
         assert(left!=null);
         assert(right!=null);
 
         if (!right.isTerminal && !right.isGuard) {
-            right.correspondingRule.decrementCount();
+            //right.correspondingRule.decrementCount();
         }
 
         if (!left.isTerminal && !left.isGuard) {
             final Rule anchor = left.correspondingRule;
-            anchor.decrementCount();
+           // anchor.decrementCount();
             if (anchor.shouldBeDeleted()) {
                 System.err.println("Have to delete!");
                 left.unwind();

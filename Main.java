@@ -6,6 +6,8 @@ public class Main {
 
     public static void main(String[] args) {
 
+        final String SEPARATOR = "^&";
+
 
         //Sequitur sq = new Sequitur('a');
 //        sq.addLetter('b');
@@ -20,13 +22,18 @@ public class Main {
 
         //rule utility test
         final NewSequitur sq = new NewSequitur();
-//        String test1 = "abcdbc"; //starts with a
+//        String test1 = "Ala ma kota kot nie ma ali a ali też nie ma"; //starts with a
 //        for(int i = 0; i<test1.length(); ++i){
 //            sq.addLetter(test1.charAt(i));
+//
 //            System.err.println(Rule.getAllRules());
 //            SequenceElement.printDigrams();
 //
 //        }
+//
+//       System.err.println(Rule.getAllRules());
+
+        //System.err.println(sq.decompress());
 
         if (args.length != 2) {
             System.err.print("Arguments: <input_file> <output_file>");
@@ -52,9 +59,20 @@ public class Main {
             System.err.println("Something went wrong while reading the input.");
             e.printStackTrace();
         }
-        System.err.println(Rule.getAllRules());
 
+        //System.err.println(Rule.getAllRules());
 
+        //System.err.print(sq.decompress());
 
+        try {
+            for(Rule rule: Rule.rules){
+                outputWriter.write(rule.toString());
+                outputWriter.write(SEPARATOR);
+            }
+            outputWriter.write(Rule.getAllRules());
+        } catch (IOException e) {
+            System.err.println("Error while saving the grammar.");
+            e.printStackTrace();
+        }
     }
 }
